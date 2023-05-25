@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 
 library(kableExtra)
+library(knitr)
+library(dplyr)
 
 raw.file = "../../data/qualys/latest.qkdb.xml.zip"
 ```
@@ -31,6 +33,15 @@ kdb <- data.frame(qid = rvest::html_text(rvest::html_elements(doc, xpath = "//VU
 kdb$published <- as.POSIXct.POSIXlt(strptime(x = kdb$published, format = "%Y-%m-%dT%TZ"))
 
 kable(head(kdb)) %>% kable_styling()
+
+summary(kdb$qid)
+
+qid_sum <- kdb %>% group_by(severity, patchable) %>% summarise(contador = n())
+
+kable(x = qid_sum, 
+      format = "html",
+      col.names = c("Severidad", "Parcheo posible", "Total"),
+      caption = "Vulnerabilidades ordenadas por severidad y capacidad de parcheo") %>% kable_classic(full_width = FALSE, html_font = "Cambria", font_size=16) 
 ```
 
 ## Including Cybersecurity Standards
